@@ -86,8 +86,10 @@ public class Router extends Device {
 				+ etherPacket.toString().replace("\n", "\n\t"));
 
 		if (etherPacket.getEtherType() != Ethernet.TYPE_IPv4) {
+			System.out.println("IPv4 check fail");
 			return;
 		}
+
 
 		IPv4 packet = (IPv4) etherPacket.getPayload();
 		short checksum = packet.getChecksum();
@@ -96,6 +98,7 @@ public class Router extends Device {
 		byte[] dPacket = packet.serialize();
 		packet = (IPv4) packet.deserialize(dPacket, 0, dPacket.length);
 		if (packet.getChecksum() != checksum || ttl <= 1) {
+			System.out.println("checkum/ttl fail " + checksum + " " + ttl);
 			return;
 		}
 		ttl -= 1;
@@ -107,17 +110,20 @@ public class Router extends Device {
 
 		for (Iface iface : interfaces.values()) {
 			if (iface.getIpAddress() == packet.getDestinationAddress()) {
+				System.out.println("Router Interface drop");
 				return;
 			}
 		}
 
 		RouteEntry entry = routeTable.lookup(packet.getDestinationAddress());
 		if (entry == null) {
+			System.out.println("Route Table lookup fail");
 			return;
 		}
 
-		ArpEntry lookup = arpCache.lookup(entry.getDestinationAddress());
+		ArpEntry lookup = arpCache.lookup(packet.getDestinationAddress());
 		if (lookup == null) {
+			System.out.println("Arp fail");
 			return;
 		}
 
