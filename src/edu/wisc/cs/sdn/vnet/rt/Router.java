@@ -121,6 +121,10 @@ public class Router extends Device {
 			return;
 		}
 
+		if (entry.getInterface().getMacAddress().equals(inIface.getMacAddress())) {
+			return;
+		}
+
 		ArpEntry lookup = arpCache.lookup(packet.getDestinationAddress());
 		if (lookup == null) {
 			System.out.println("Arp fail");

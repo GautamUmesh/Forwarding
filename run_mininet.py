@@ -333,7 +333,7 @@ if __name__ == '__main__':
     for vhost in topo.vhosts:
         node = net.get(vhost.name)
         vhost.configureRoute(node)
-#        vhost.starthttp()
+        vhost.starthttp()
     for vrouter in topo.vrouters.values():
         node = net.get(vrouter.name)
         vrouter.switch = node
